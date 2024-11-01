@@ -40,7 +40,7 @@ function FavoritesPage() {
       <Title mt={"lg"} order={2}>
         Favorites
       </Title>
-      <Divider color="#262626" mt={"md"} />
+      <Divider color="var(--nav-text-color)" mt={"md"} />
       {favorites.length === 0 ? (
         <Container className="favorites-container">
           <Center style={{ flexDirection: "column" }}>

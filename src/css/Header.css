@@ -27,7 +27,7 @@ header {
 
 .button-color {
   color: var(--nav-text-color);
-  font-weight: 500;
+  font-weight: 400;
   font-size: 16px;
 }
 
@@ -54,7 +54,7 @@ header {
   border-radius: var(--mantine-radius-sm);
   text-decoration: none;
   color: var(--nav-text-color);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .link.active,

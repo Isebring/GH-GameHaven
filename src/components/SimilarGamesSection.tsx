@@ -18,7 +18,7 @@ const SimilarGamesSection: React.FC<SimilarGamesSectionProps> = ({
             You might also like
           </Title>
           <Container size={"xl"}>
-            <Divider color="#262626" />
+            <Divider color="var(--nav-text-color)" />
           </Container>
           <Carousel games={similarGames} />
         </Box>
@@ -28,7 +28,7 @@ const SimilarGamesSection: React.FC<SimilarGamesSectionProps> = ({
             You might also like
           </Title>
           <Container size={"xl"}>
-            <Divider color="#262626" />
+            <Divider color="var(--nav-text-color)" />
           </Container>
           <Text pl={10} mb={"lg"} mt={"sm"}>
             No Similar Games Available

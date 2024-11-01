@@ -229,7 +229,7 @@ function GamesPage() {
         {selectedGameMode || "None"}
       </Text>
       <Container mt={"md"} size={"xl"}>
-        <Divider color="#262626" />
+        <Divider color="var(--nav-text-color)" />
       </Container>
       <div>
         {games.length > 0 ? (

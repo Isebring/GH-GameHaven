@@ -76,14 +76,14 @@ function HomePage() {
         Top Rated Games
       </Title>
       <Container size={"xl"}>
-        <Divider color="#262626" />
+        <Divider color="#f2c341" />
       </Container>
       <Carousel games={topRatedGames} />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
         Newest Releases
       </Title>
       <Container size={"xl"}>
-        <Divider color="#262626" />
+        <Divider color="#f2c341" />
       </Container>
       <Carousel games={newestGames} />
       <GhInfo />
@@ -91,7 +91,7 @@ function HomePage() {
         Upcoming Releases
       </Title>
       <Container size={"xl"}>
-        <Divider color="#262626" />
+        <Divider color="#f2c341" />
       </Container>
       <Carousel games={upcomingGames} />
     </>
