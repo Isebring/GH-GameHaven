@@ -337,13 +337,13 @@ function ProfilePage() {
                     className="button-style"
                     fullWidth
                     type="submit"
-                    mt={"xl"}
+                    mt={"lg"}
                   >
                     Save Changes
                   </Button>
                 </Stack>
               </form>
-              <Button color="red" fullWidth onClick={openModal}>
+              <Button mt="lg" color="red" fullWidth onClick={openModal}>
                 Delete My Account
               </Button>
             </Box>
