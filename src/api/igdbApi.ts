@@ -417,9 +417,9 @@ const translateRatingToPEGI = (rating: number): string => {
 
 export const getTopRatedGames = async (
   platform: string,
-  minRating: number = defaultMinRating,
-  minRatingCount: number = defaultMinRatingCount,
-  limit: number = 15
+  minRating = defaultMinRating,
+  minRatingCount = defaultMinRatingCount,
+  limit = 15
 ) => {
   const cacheKey = `topRatedGames-${platform}-${minRating}-${minRatingCount}-${limit}`;
   const cachedData = sessionStorage.getItem(cacheKey);
@@ -429,32 +429,27 @@ export const getTopRatedGames = async (
   }
 
   const endpoint = "games/";
-  const url = `${endpoint}?fields=name, summary, total_rating,total_rating_count,cover.image_id,artworks.*,screenshots.image_id,websites&order=rating:desc&limit=${limit}&platforms=${
-    platformIds[platform.toLowerCase()] || platformIds.pc
-  }&filter[rating][gt]=${minRating}&filter[rating_count][gt]=${minRatingCount};`;
+  const requestBody = `
+    fields name, summary, total_rating, total_rating_count, cover.image_id, artworks.*, screenshots.image_id, websites;
+    where total_rating > ${minRating} & total_rating_count > ${minRatingCount} & platforms = (${platformIds[platform.toLowerCase()] || platformIds.pc});
+    sort total_rating desc;
+    limit ${limit};
+  `;
 
   try {
-    const response = await axiosClient.get(url);
+    const response = await axiosClient.post(endpoint, requestBody);
     const topRatedGames = response.data;
 
-    const gamesWithCovers = await fetchGameCoversAndScreenshots(
-      topRatedGames,
-   
-    );
+    const gamesWithCovers = await fetchGameCoversAndScreenshots(topRatedGames);
 
     // Attempt to cache the results in sessionStorage
     try {
       sessionStorage.setItem(cacheKey, JSON.stringify(gamesWithCovers));
     } catch (e) {
-      if (
-        e instanceof DOMException &&
-        e.code === DOMException.QUOTA_EXCEEDED_ERR
-      ) {
+      if (e instanceof DOMException && e.code === DOMException.QUOTA_EXCEEDED_ERR) {
         console.warn("Session storage is full, unable to cache the results");
-        // If sessionStorage is full, this warning is logged but the function continues
       } else {
         console.error("Error during caching:", e);
-        // Log other caching errors
       }
     }
 
