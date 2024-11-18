@@ -44,9 +44,7 @@ const router = createBrowserRouter([
   { path: "*", element: <ErrorPage /> },
 ]);
 
-const theme = createTheme({
-  /** Put your mantine theme override here */
-});
+const theme = createTheme({});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
