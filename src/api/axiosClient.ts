@@ -7,6 +7,7 @@ const axiosClient = axiosRateLimit(
   axios.create({
     baseURL: apiConfig.baseUrl,
     headers: {
+      'x-cors-api-key': apiConfig.corsSH,
       "Client-ID": apiConfig.clientID,
       Authorization: `Bearer ${apiConfig.authorization}`,
       "Content-Type": "text/plain",
