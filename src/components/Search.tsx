@@ -146,7 +146,6 @@ function Search() {
                 className="dropdown-search"
                 shadow="lg"
                 radius="xs"
-                pl="sm"
               >
                 {searchResults.map((game, index) => (
                   <NavLink

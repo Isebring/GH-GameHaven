@@ -29,8 +29,8 @@
 }
 
 .text-hover {
-  padding-left: 1rem;
-  margin-right: 1rem;
+  padding-left: 1.3rem;
+  padding-right: 0.8rem;
 }
 
 .text-hover:hover {
