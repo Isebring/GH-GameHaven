@@ -2,6 +2,7 @@ import { Container, Divider, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import {
   getNewGames,
+  getPopularRightNowGames,
   getTopRatedGames,
   getUpcomingGames,
 } from "../api/igdbApi";
@@ -26,6 +27,7 @@ function HomePage() {
   const [topRatedGames, setTopRatedGames] = useState<Game[]>([]);
   const [newestGames, setNewestGames] = useState<Game[]>([]);
   const [upcomingGames, setUpcomingGames] = useState<Game[]>([]);
+  const [popularGames, setPopularGames] = useState<Game[]>([]);
 
   useEffect(() => {
     document.title = "GH: Gamehaven";
@@ -69,9 +71,26 @@ function HomePage() {
       });
   }, []);
 
+  useEffect(() => {
+    getPopularRightNowGames("playstation")
+      .then((popularGames) => {
+        setPopularGames(popularGames);
+      })
+      .catch((error) => {
+        console.error("Error fetching popular games:", error);
+      });
+  }, []);
+
   return (
     <>
       <HeroSlide games={upcomingGames} />
+      <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
+        Popular Right Now
+      </Title>
+      <Container size={"xl"}>
+        <Divider color="#f2c341" />
+      </Container>
+      <Carousel games={popularGames} />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
         Top Rated Games
       </Title>

@@ -195,6 +195,59 @@ export const searchForGames = async (
   }
 };
 
+export const getPopularRightNowGames = async (
+  platform: string,
+  minRating = defaultMinRating,
+  limit = 20
+) => {
+  const cacheKey = `popularRightNow-${platform}-${minRating}-${limit}`;
+  const cachedData = sessionStorage.getItem(cacheKey);
+
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
+  const endpoint = "games/";
+  const platformId = platformIds[platform.toLowerCase()];
+
+  if (!platformId) {
+    throw new Error(`Invalid platform: ${platform}`);
+  }
+
+  const requestBody = `
+    fields name, summary, total_rating, total_rating_count, cover.image_id, release_dates.date, artworks.*, screenshots.image_id, websites;
+    where total_rating > ${minRating} 
+      & platforms = (${platformId}) 
+      & release_dates.date > ${Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 30)}; 
+    sort total_rating desc;
+    limit ${limit};
+  `;
+
+
+  try {
+    const response = await axiosClient.post(endpoint, requestBody);
+    const popularGames = response.data;
+
+    const gamesWithCovers = await fetchGameCoversAndScreenshots(popularGames);
+
+    // Cache the results
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify(gamesWithCovers));
+    } catch (e) {
+      if (e instanceof DOMException && e.code === DOMException.QUOTA_EXCEEDED_ERR) {
+        console.warn("Session storage is full, unable to cache the results");
+      } else {
+        console.error("Error during caching:", e);
+      }
+    }
+
+    return gamesWithCovers;
+  } catch (error) {
+    console.error("Error fetching popular games:", error);
+    throw error;
+  }
+};
+
 export const fetchFilteredGames = async (
   platforms: Array<{ name: string }> = [],
   genres: Array<{ name: string }> = [],
@@ -609,4 +662,5 @@ export default {
   getTopRatedGames,
   getNewGames,
   getUpcomingGames,
+  getPopularRightNowGames,
 };
