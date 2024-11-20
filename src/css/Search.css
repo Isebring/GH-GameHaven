@@ -28,6 +28,11 @@
   width: 100%;
 }
 
+.text-hover {
+  padding-left: 1rem;
+  margin-right: 1rem;
+}
+
 .text-hover:hover {
   background-color: #e0e0e0;
   color: #333333;
