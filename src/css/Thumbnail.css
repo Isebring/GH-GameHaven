@@ -20,11 +20,26 @@
 .thumbnail-image {
   position: relative;
   overflow: hidden;
+  width: 100%;
+  height: auto;
 }
 
 .thumbnail-image img {
   height: 18rem;
   border-radius: 0.625rem;
+}
+
+.age-rating-div {
+  position: absolute;
+  top: 8px;
+  left: 9px;
+  background-color: rgba(233, 233, 233, 0.904);
+  color: black;
+  font-weight: 600;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  z-index: 1;
 }
 
 .heart-icon {

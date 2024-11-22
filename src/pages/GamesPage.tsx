@@ -5,6 +5,7 @@ import {
   Divider,
   Group,
   Image,
+  Loader,
   Pagination,
   SimpleGrid,
   Text,
@@ -15,7 +16,7 @@ import { BsNintendoSwitch } from "react-icons/bs";
 import { FaPlaystation, FaXbox } from "react-icons/fa";
 import { PiDesktopTowerFill } from "react-icons/pi";
 import { SiNintendogamecube } from "react-icons/si";
-import { fetchFilteredGames } from "../api/igdbApi";
+import { fetchFilteredGames, fetchGameThumbnailsData } from "../api/igdbApi";
 import n64 from "../assets/N64-logo.png";
 import nes from "../assets/NES-logo.png";
 import snes from "../assets/SNES-logo.png";
@@ -30,6 +31,7 @@ function GamesPage() {
     useState<string>("Singleplayer");
   const [games, setGames] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const limitPerPage = 24;
 
   useEffect(() => {
@@ -38,27 +40,46 @@ function GamesPage() {
   }, []);
 
   useEffect(() => {
-    const fetchGames = async () => {
-      const platformFilter = selectedPlatform
-        ? [{ name: selectedPlatform }]
-        : [];
-      const genreFilter = selectedGenre ? [{ name: selectedGenre }] : [];
+    const fetchGamesWithRatings = async () => {
+      setLoading(true); // Start loading
+      try {
+        const platformFilter = selectedPlatform
+          ? [{ name: selectedPlatform }]
+          : [];
+        const genreFilter = selectedGenre ? [{ name: selectedGenre }] : [];
+        const gameModeFilter = selectedGameMode
+          ? [{ name: selectedGameMode }]
+          : [];
 
-      const gameModeFilter = selectedGameMode
-        ? [{ name: selectedGameMode }]
-        : [];
+        const filteredGames = await fetchFilteredGames(
+          platformFilter,
+          genreFilter,
+          gameModeFilter,
+          currentPage,
+          limitPerPage
+        );
 
-      const filteredGames = await fetchFilteredGames(
-        platformFilter,
-        genreFilter,
-        gameModeFilter,
-        currentPage,
-        limitPerPage
-      );
-      setGames(filteredGames);
+        const gameIds = filteredGames.map((game: any) => game.id);
+        const ageRatings = await fetchGameThumbnailsData(gameIds);
+        const enrichedGames = filteredGames.map((game: any) => {
+          const ratingData = ageRatings.find(
+            (rating: any) => rating.id === game.id
+          );
+          return {
+            ...game,
+            age_number: ratingData?.age_number || "Unrated",
+          };
+        });
+
+        setGames(enrichedGames);
+      } catch (error) {
+        console.error("Error fetching games or ratings:", error);
+      } finally {
+        setLoading(false); // End loading
+      }
     };
 
-    fetchGames();
+    fetchGamesWithRatings();
   }, [selectedPlatform, selectedGenre, selectedGameMode, currentPage]);
 
   const handlePageChange = (page: number) => {
@@ -232,7 +253,14 @@ function GamesPage() {
         <Divider color="var(--nav-text-color)" />
       </Container>
       <div>
-        {games.length > 0 ? (
+        {loading ? ( // Show loader while loading
+          <Box className="loader-style">
+            <Loader color="orange" size="xl" type="dots" />
+            <Text fw={500} size="md">
+              Loading...
+            </Text>
+          </Box>
+        ) : games.length > 0 ? (
           <SimpleGrid
             cols={{ base: 1, xs: 3, sm: 4, lg: 6 }}
             spacing={"xs"}

@@ -25,6 +25,7 @@ interface Game {
   total_rating: number;
   id: number;
   summary: string;
+  age_number?: string | number;
 }
 
 const Thumbnail: React.FC<{ game: Game }> = ({ game }) => {
@@ -90,11 +91,19 @@ const Thumbnail: React.FC<{ game: Game }> = ({ game }) => {
       });
     }
   };
+
+  const renderAgeRating = () => {
+    if (typeof game.age_number === "number" && game.age_number > 0) {
+      return `${game.age_number}+`;
+    }
+    return "N/A";
+  };
   return (
     <Box className="thumbnail-card-container">
       <NavLink to={`/game/${game.id}`} className="game-link">
         <Box className="thumbnail-image">
           <Image src={game.cover} fallbackSrc={logo} alt={game.name} />
+          <Box className="age-rating-div">{renderAgeRating()}</Box>
           <Box className="hover-content">
             <Spoiler
               maxHeight={200}

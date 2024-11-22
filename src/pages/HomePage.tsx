@@ -1,6 +1,7 @@
 import { Container, Divider, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import {
+  fetchGameThumbnailsData,
   getNewGames,
   getPopularRightNowGames,
   getTopRatedGames,
@@ -21,6 +22,7 @@ export interface Game {
   artworks: string[];
   release_dates: Array<{ date: string }>;
   platforms: Array<{ name: string }>;
+  age_number?: string | number;
 }
 
 function HomePage() {
@@ -28,6 +30,22 @@ function HomePage() {
   const [newestGames, setNewestGames] = useState<Game[]>([]);
   const [upcomingGames, setUpcomingGames] = useState<Game[]>([]);
   const [popularGames, setPopularGames] = useState<Game[]>([]);
+
+  const fetchAgeRatings = async (games: Game[]) => {
+    try {
+      const gameIds = games.map((game) => game.id);
+      const ageRatings = await fetchGameThumbnailsData(gameIds);
+      return games.map((game) => {
+        const ratingData = ageRatings.find(
+          (rating: any) => rating.id === game.id
+        );
+        return { ...game, age_number: ratingData?.age_number || "Unrated" };
+      });
+    } catch (error) {
+      console.error("Error fetching age ratings:", error);
+      return games; // Return original games if age ratings fail
+    }
+  };
 
   useEffect(() => {
     document.title = "GH: Gamehaven";
@@ -43,9 +61,8 @@ function HomePage() {
 
   useEffect(() => {
     getTopRatedGames("playstation")
-      .then((topRatedGames) => {
-        setTopRatedGames(topRatedGames);
-      })
+      .then(fetchAgeRatings) // Add age ratings to the games
+      .then(setTopRatedGames)
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -53,9 +70,8 @@ function HomePage() {
 
   useEffect(() => {
     getNewGames("playstation")
-      .then((newGames) => {
-        setNewestGames(newGames);
-      })
+      .then(fetchAgeRatings) // Add age ratings to the games
+      .then(setNewestGames)
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -63,9 +79,8 @@ function HomePage() {
 
   useEffect(() => {
     getUpcomingGames("playstation")
-      .then((upcomingGames) => {
-        setUpcomingGames(upcomingGames);
-      })
+      .then(fetchAgeRatings) // Add age ratings to the games
+      .then(setUpcomingGames)
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -73,9 +88,8 @@ function HomePage() {
 
   useEffect(() => {
     getPopularRightNowGames("playstation")
-      .then((popularGames) => {
-        setPopularGames(popularGames);
-      })
+      .then(fetchAgeRatings) // Add age ratings to the games
+      .then(setPopularGames)
       .catch((error) => {
         console.error("Error fetching popular games:", error);
       });

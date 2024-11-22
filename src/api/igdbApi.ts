@@ -215,13 +215,13 @@ export const getPopularRightNowGames = async (
   }
 
   const requestBody = `
-    fields name, summary, total_rating, total_rating_count, cover.image_id, release_dates.date, artworks.*, screenshots.image_id, websites;
-    where total_rating > ${minRating} 
-      & platforms = (${platformId}) 
-      & release_dates.date > ${Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 30)}; 
-    sort total_rating desc;
-    limit ${limit};
-  `;
+  fields name, summary, total_rating, total_rating_count, cover.image_id, release_dates.date, artworks.*, screenshots.image_id, websites, age_ratings.category, age_ratings.rating;
+  where total_rating > ${minRating} 
+    & platforms = (${platformId}) 
+    & release_dates.date > ${Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 30)}; 
+  sort total_rating desc;
+  limit ${limit};
+`;
 
 
   try {
@@ -438,6 +438,16 @@ export const getGameDetails = async (query: number, platform: string) => {
   }
 };
 
+const extractNumericAgeFromPEGI = (pegiRating: string): number | null => {
+  const match = pegiRating.match(/\d+/); // Extract numeric part (e.g., "PEGI 3" => 3)
+  return match ? parseInt(match[0], 10) : null;
+};
+
+// const extractNumericAgeFromRating = (rating: number): number | null => {
+  // Placeholder for other age rating extraction logic
+  // return rating; // Assumes numeric rating for non-PEGI categories
+// };
+
 const getAgeRatingDetails = async (ageRatingId: number) => {
   const ageRatingEndpoint = "age_ratings/";
   const requestBody = `fields category, rating; where id = ${ageRatingId};`;
@@ -468,6 +478,89 @@ const translateRatingToPEGI = (rating: number): string => {
   }
 };
 
+
+export const fetchGameThumbnailsData = async (gameIds: number[]) => {
+  if (gameIds.length === 0) {
+    throw new Error("No game IDs provided.");
+  }
+
+  const cacheKey = `fetchGameThumbnailsData-${gameIds.join(",")}`;
+  const cachedData = sessionStorage.getItem(cacheKey);
+
+  if (cachedData) {
+    console.log("Using cached data for fetchGameThumbnailsData");
+    return JSON.parse(cachedData);
+  }
+
+  const requestBody = `
+    fields id, name, cover.image_id, age_ratings.category, age_ratings.rating, age_ratings.id;
+    where id = (${gameIds.join(",")});
+  `;
+
+  try {
+    const response = await axiosClient.post("games/", requestBody);
+    const gamesData = response.data;
+
+    if (!gamesData || gamesData.length === 0) {
+      throw new Error("No game data found.");
+    }
+
+    const processedData = await Promise.all(
+      gamesData.map(async (game: any) => {
+        let pegiRating = null;
+        let ageNumber = null;
+
+        if (!Array.isArray(game.age_ratings) || game.age_ratings.length === 0) {
+          console.warn(`No age ratings found for Game ID: ${game.id}`, game);
+          ageNumber = "N/A";
+        } else {
+          const pegiDetails = game.age_ratings.find(
+            (rating: any) => rating.category === 2 && rating.rating !== undefined
+          );
+
+          if (pegiDetails) {
+            pegiRating = translateRatingToPEGI(pegiDetails.rating);
+          } else {
+            const ageRatingDetails = await Promise.all(
+              game.age_ratings.map(async (rating: any) => {
+                if (rating.id) {
+                  return await getAgeRatingDetails(rating.id);
+                }
+                return null;
+              })
+            );
+
+            const validPegi = ageRatingDetails.find(
+              (detail: any) => detail?.category === 2
+            );
+            if (validPegi) {
+              pegiRating = translateRatingToPEGI(validPegi.rating);
+            }
+          }
+        }
+
+        ageNumber = pegiRating
+          ? extractNumericAgeFromPEGI(pegiRating)
+          : "N/A";
+
+        return {
+          id: game.id,
+          name: game.name,
+          cover: game.cover?.image_id
+            ? getGameCoverUrl(game.cover.image_id)
+            : defaultCoverUrl,
+          age_number: ageNumber,
+        };
+      })
+    );
+
+    sessionStorage.setItem(cacheKey, JSON.stringify(processedData));
+    return processedData;
+  } catch (error) {
+    console.error("Error fetching thumbnails data:", error);
+    throw error;
+  }
+};
 export const getTopRatedGames = async (
   platform: string,
   minRating = defaultMinRating,
@@ -483,7 +576,8 @@ export const getTopRatedGames = async (
 
   const endpoint = "games/";
   const requestBody = `
-    fields name, summary, total_rating, total_rating_count, cover.image_id, artworks.*, screenshots.image_id, websites;
+    fields name, summary, total_rating, total_rating_count, cover.image_id, artworks.*, screenshots.image_id, websites, age_ratings.category, age_ratings.rating;
+  
     where total_rating > ${minRating} & total_rating_count > ${minRatingCount} & platforms = (${platformIds[platform.toLowerCase()] || platformIds.pc});
     sort total_rating desc;
     limit ${limit};
@@ -622,7 +716,7 @@ export const getUpcomingGames = async (platform: any, limit: number = 15) => {
     const gamesResponse = await axiosClient.get(
       `games/${gameIds.join(
         ","
-      )}?fields=name,summary,cover.image_id,screenshots.image_id,artworks.*,websites`
+      )}?fields=name,summary,cover.image_id,screenshots.image_id,artworks.*,websites, age_ratings.category, age_ratings.rating; `
     );
 
     const filteredGames = gamesResponse.data.filter((game: any) => 
