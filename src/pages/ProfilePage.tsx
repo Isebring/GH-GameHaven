@@ -343,7 +343,13 @@ function ProfilePage() {
                   </Button>
                 </Stack>
               </form>
-              <Button mt="lg" color="red" fullWidth onClick={openModal}>
+              <Button
+                mt="lg"
+                color="red"
+                style={{ color: "#262626" }}
+                fullWidth
+                onClick={openModal}
+              >
                 Delete My Account
               </Button>
             </Box>

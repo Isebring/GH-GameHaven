@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Container,
   Divider,
   Group,
@@ -253,10 +254,17 @@ function GamesPage() {
         <Divider color="var(--nav-text-color)" />
       </Container>
       <div>
-        {loading ? ( // Show loader while loading
-          <Box className="loader-style">
+        {loading ? (
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
             <Loader color="orange" size="xl" type="dots" />
-            <Text fw={500} size="md">
+            <Text ta={Center} fw={500} size="md">
               Loading...
             </Text>
           </Box>
