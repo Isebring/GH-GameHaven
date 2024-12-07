@@ -53,6 +53,8 @@ function RegisterPage() {
       name: (val) =>
         val.length <= 1
           ? "Username should include at least 2 characters"
+          : val.length > 12
+          ? "Username cannot exceed 12 characters"
           : null,
       email: (val) =>
         /^\S+@\S+$/.test(val)

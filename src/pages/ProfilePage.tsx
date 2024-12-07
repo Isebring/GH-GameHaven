@@ -345,7 +345,7 @@ function ProfilePage() {
               </form>
               <Button
                 mt="lg"
-                color="red"
+                color="#ff7070"
                 style={{ color: "#262626" }}
                 fullWidth
                 onClick={openModal}

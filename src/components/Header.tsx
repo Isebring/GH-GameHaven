@@ -7,6 +7,7 @@ import {
   Image,
   Menu,
   Paper,
+  Text,
   Transition,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -136,6 +137,9 @@ function Header() {
                     } clickable-profile-image`}
                   />
                 </Menu.Target>
+                <Text size="xs" fw={500}>
+                  {user?.displayName || "Profile"}
+                </Text>
                 <Menu.Dropdown>
                   <Menu.Label>Account</Menu.Label>
                   <NavLink to={"/profile"} style={{ textDecoration: "none" }}>
