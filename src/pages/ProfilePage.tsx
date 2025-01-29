@@ -345,8 +345,7 @@ function ProfilePage() {
               </form>
               <Button
                 mt="lg"
-                color="#ff7070"
-                style={{ color: "#262626" }}
+                className="button-style-second"
                 fullWidth
                 onClick={openModal}
               >

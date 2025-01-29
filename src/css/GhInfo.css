@@ -31,6 +31,16 @@
   transition: 0.3s ease;
 }
 
+.button-style-second {
+  background-color: #ff7070;
+  color: #222;
+  transition: 0.3s ease;
+}
+
+.button-style-second:hover {
+  filter: drop-shadow(0 0 2px rgba(117, 87, 6, 0.8));
+}
+
 .button-style:hover {
   filter: drop-shadow(0 0 2px rgba(117, 87, 6, 0.8));
 }
