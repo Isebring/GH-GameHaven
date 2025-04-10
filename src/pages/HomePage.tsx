@@ -101,32 +101,32 @@ function HomePage() {
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
         Popular Right Now
       </Title>
+      <Carousel games={popularGames} />
       <Container size={"xl"}>
         <Divider color="#f2c341" />
       </Container>
-      <Carousel games={popularGames} />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
         Top Rated Games
       </Title>
+      <Carousel games={topRatedGames} />
       <Container size={"xl"}>
         <Divider color="#f2c341" />
       </Container>
-      <Carousel games={topRatedGames} />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
         Newest Releases
       </Title>
-      <Container size={"xl"}>
+      <Carousel games={newestGames} />
+      <Container mb="lg" size={"xl"}>
         <Divider color="#f2c341" />
       </Container>
-      <Carousel games={newestGames} />
       <GhInfo />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
         Upcoming Releases
       </Title>
-      <Container size={"xl"}>
+      <Carousel games={upcomingGames} />
+      <Container mb="lg" size={"xl"}>
         <Divider color="#f2c341" />
       </Container>
-      <Carousel games={upcomingGames} />
     </>
   );
 }
