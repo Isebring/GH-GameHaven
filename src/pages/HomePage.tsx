@@ -99,21 +99,21 @@ function HomePage() {
     <>
       <HeroSlide games={upcomingGames} />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
-        Popular Right Now
+        🔥 Popular Right Now
       </Title>
       <Carousel games={popularGames} />
       <Container size={"xl"}>
         <Divider color="#f2c341" />
       </Container>
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
-        Top Rated Games
+        🔝 Top Rated Games
       </Title>
       <Carousel games={topRatedGames} />
       <Container size={"xl"}>
         <Divider color="#f2c341" />
       </Container>
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
-        Newest Releases
+        🙌 Newest Releases
       </Title>
       <Carousel games={newestGames} />
       <Container mb="lg" size={"xl"}>
@@ -121,7 +121,7 @@ function HomePage() {
       </Container>
       <GhInfo />
       <Title order={3} mt={"md"} pl={"md"} mb={"md"}>
-        Upcoming Releases
+        🕛 Upcoming Releases
       </Title>
       <Carousel games={upcomingGames} />
       <Container mb="lg" size={"xl"}>
