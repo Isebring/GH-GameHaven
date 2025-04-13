@@ -43,10 +43,10 @@ const SimilarGamesSection: React.FC<SimilarGamesSectionProps> = ({
           <Title pl={10} mt="md" mb={"md"} order={4}>
             You might also like
           </Title>
-          <Container size={"xl"}>
-            <Divider color="var(--nav-text-color)" />
-          </Container>
           <Carousel games={enrichedGames} />
+          <Container size={"xl"}>
+            <Divider mb="lg" color="var(--nav-text-color)" />
+          </Container>
         </Box>
       ) : (
         <Box>

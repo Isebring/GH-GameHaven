@@ -37,10 +37,9 @@ function FavoritesPage() {
 
   return (
     <Container size="xl">
-      <Title mt={"lg"} order={2}>
+      <Title ml="md" mt={"lg"} mb={"lg"} order={2}>
         Favorites
       </Title>
-      <Divider color="var(--nav-text-color)" mt={"md"} />
       {favorites.length === 0 ? (
         <Container className="favorites-container">
           <Center style={{ flexDirection: "column" }}>
@@ -71,6 +70,7 @@ function FavoritesPage() {
               <Thumbnail key={game.id} game={game} />
             ))}
           </SimpleGrid>
+          <Divider color="var(--nav-text-color)" mt={"xl"} />
         </Container>
       )}
     </Container>
