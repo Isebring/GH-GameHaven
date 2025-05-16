@@ -1,3 +1,4 @@
+import axios from "axios";
 import logo from "../assets/GH-logo.png";
 import axiosClient from "./axiosClient";
 
@@ -249,10 +250,14 @@ export const getPopularRightNowGames = async (
     }
 
     return gamesWithCovers;
-  } catch (error) {
-    console.error("Error fetching popular games by IGDB Visits:", error.response?.data || error);
-    throw error;
+} catch (error) {
+  if (axios.isAxiosError(error)) {
+    console.error("Error fetching popular games by IGDB Visits:", error.response?.data || error.message);
+  } else {
+    console.error("Unexpected error fetching popular games by IGDB Visits:", error);
   }
+  throw error;
+}
 };
 
 export const fetchFilteredGames = async (
