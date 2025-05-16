@@ -197,45 +197,52 @@ export const searchForGames = async (
 
 export const getPopularRightNowGames = async (
   platform: string,
-  minRating = defaultMinRating,
   limit = 20
 ) => {
-  const cacheKey = `popularRightNow-${platform}-${minRating}-${limit}`;
+  const cacheKey = `popularByVisits-${platform}-${limit}`;
   const cachedData = sessionStorage.getItem(cacheKey);
+  if (cachedData) return JSON.parse(cachedData);
 
-  if (cachedData) {
-    return JSON.parse(cachedData);
-  }
-
-  const endpoint = "games/";
   const platformId = platformIds[platform.toLowerCase()];
+  if (!platformId) throw new Error(`Invalid platform: ${platform}`);
 
-  if (!platformId) {
-    throw new Error(`Invalid platform: ${platform}`);
-  }
-
-  const requestBody = `
-  fields name, summary, total_rating, total_rating_count, cover.image_id, release_dates.date, artworks.*, screenshots.image_id, websites, age_ratings.category, age_ratings.rating;
-  where total_rating > ${minRating} 
-    & platforms = (${platformId}) 
-    & release_dates.date > ${Math.floor(Date.now() / 1000) - (60 * 60 * 24 * 30)}; 
-  sort total_rating desc;
-  limit ${limit};
-`;
-
+  const popularityEndpoint = "popularity_primitives";
+  const gamesEndpoint = "games/";
 
   try {
-    const response = await axiosClient.post(endpoint, requestBody);
-    const popularGames = response.data;
+    const popularityRequestBody = `
+      fields game_id, value, popularity_type;
+      sort value desc;
+      where popularity_type = 1;
+      limit 100;
+    `.replace(/\s{2,}/g, " ").trim();
+
+    const popularityResponse = await axiosClient.post(popularityEndpoint, popularityRequestBody);
+    const gameIdsRaw: number[] = popularityResponse.data.map((entry: any) => entry.game_id);
+
+    if (gameIdsRaw.length === 0) return [];
+
+    const dataRequestBody = `
+      fields name, summary, total_rating, total_rating_count, 
+      cover.image_id, release_dates.date, platforms, artworks.*, screenshots.image_id, 
+      websites, age_ratings.category, age_ratings.rating;
+      where id = (${gameIdsRaw.join(",")}) & platforms = (${platformId});
+      limit ${limit};
+    `.replace(/\s{2,}/g, " ").trim();
+
+    const dataResponse = await axiosClient.post(gamesEndpoint, dataRequestBody);
+    const popularGames = dataResponse.data;
 
     const gamesWithCovers = await fetchGameCoversAndScreenshots(popularGames);
 
-    // Cache the results
     try {
       sessionStorage.setItem(cacheKey, JSON.stringify(gamesWithCovers));
     } catch (e) {
-      if (e instanceof DOMException && e.code === DOMException.QUOTA_EXCEEDED_ERR) {
-        console.warn("Session storage is full, unable to cache the results");
+      if (
+        e instanceof DOMException &&
+        e.code === DOMException.QUOTA_EXCEEDED_ERR
+      ) {
+        console.warn("Session storage full, unable to cache results");
       } else {
         console.error("Error during caching:", e);
       }
@@ -243,7 +250,7 @@ export const getPopularRightNowGames = async (
 
     return gamesWithCovers;
   } catch (error) {
-    console.error("Error fetching popular games:", error);
+    console.error("Error fetching popular games by IGDB Visits:", error.response?.data || error);
     throw error;
   }
 };
