@@ -214,7 +214,7 @@ export const getPopularRightNowGames = async (
     const popularityRequestBody = `
       fields game_id, value, popularity_type;
       sort value desc;
-      where popularity_type = 1;
+      where popularity_type = 3;
       limit 100;
     `.replace(/\s{2,}/g, " ").trim();
 
