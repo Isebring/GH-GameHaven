@@ -17,7 +17,7 @@ function AboutPage() {
         <Image src={logo} alt="GameHaven Logo" maw={500} />
       </Box>
       <Title order={2} mb={"lg"}>
-        Our Story
+        The Story of GameHaven
       </Title>
       <Text mb={"lg"}>
         Greetings, gaming enthusiasts! We are thrilled to introduce you to
